@@ -1,50 +1,214 @@
-form ul.object.properties > li:has(> fieldset.edit-components)::before {
-	content: '';
-	display: table-cell;
-}
+@import url('../action-bar/action.css');
+@import url('../delete/css/action.css');
+@import url('../new/css/action.css');
 
 fieldset.edit-components {
 	border: 0;
+	inline-size: fit-content;
 	margin: 0;
+	max-inline-size: 100%;
 	min-width: 0;
 	padding: 0;
 
-	> table {
-		border-collapse: collapse;
+	> table.component-table {
 		width: 100%;
+	}
 
-		> thead > tr > th {
-			background: #f8f8f8;
-			text-align: left;
+	> .component-actions {
+		display: flex;
+		gap: 4px;
+		justify-content: flex-end;
+		margin-top: 4px;
+
+		> [data-remove-rows] {
+			margin-inline-end: auto;
+
+			&[hidden] {
+				display: block;
+				visibility: hidden;
+			}
 		}
 
-		> thead > tr > th,
-		> tbody > tr > td {
-			border: 1px solid #ddd;
-			padding: 4px 6px;
+		> [data-add-row] {
+			min-width: 26px;
+			padding: 0;
+		}
+	}
+}
+
+
+ul.object.properties > li:has(> fieldset.edit-components, > div > table.component-table[data-component-output]) {
+	--selection-width: 26px;
+
+	> label {
+		min-inline-size: var(--selection-width);
+	}
+
+	> label + fieldset.edit-components > table.component-table {
+		border: 0;
+		margin-inline-start: calc(-1 * var(--selection-width));
+		width: calc(100% + var(--selection-width));
+
+		> :is(thead, tbody) > tr > :first-child {
+			background: transparent;
+			border: 0;
+			padding: 0;
+			width: var(--selection-width);
 		}
 
-		> tbody > tr > td {
+		> :is(thead, tbody) > tr > :last-child {
+			border-inline-end: 1px solid #ddd;
+		}
+
+		> thead > tr {
+			> :not(:first-child) {
+				border-top: 1px solid #ddd;
+			}
+
+			> :nth-child(2) {
+				border-start-start-radius: 4px;
+			}
+
+			> :last-child {
+				border-start-end-radius: 4px;
+			}
+		}
+
+		&:not(:has(> tbody > tr)) > thead > tr,
+		> tbody > tr:last-child {
+			> :not(:first-child) {
+				border-bottom: 1px solid #ddd;
+			}
+
+			> :nth-child(2) {
+				border-end-start-radius: 4px;
+			}
+
+			> :last-child {
+				border-end-end-radius: 4px;
+			}
+		}
+	}
+}
+
+table.component-table {
+	border: 1px solid #ddd;
+	border-collapse: separate;
+	border-radius: 4px;
+	border-spacing: 0;
+	width: fit-content;
+
+	> thead > tr > th {
+		background: #f8f8f8;
+		padding: 6px;
+		text-align: left;
+		vertical-align: top;
+
+		&:first-child {
+			border-start-start-radius: 3px;
+		}
+
+		&:last-child {
+			border-start-end-radius: 3px;
+		}
+	}
+
+	> :is(thead, tbody) > tr > :is(th, td) + :is(th, td) {
+		border-inline-start: 1px solid #ddd;
+	}
+
+	&:not(:has(> tbody > tr)) > thead > tr,
+	> tbody > tr:last-child {
+		> :first-child {
+			border-end-start-radius: 3px;
+		}
+
+		> :last-child {
+			border-end-end-radius: 3px;
+		}
+	}
+
+	> tbody > tr:has(> .row-selection > input:checked) > td {
+		background: #edf4ff;
+	}
+
+	> tbody > tr > td {
+		border-top: 1px solid #ddd;
+		padding: 0;
+
+		&[data-component-control] {
+			cursor: text;
+
 			&:focus-within {
-				box-shadow: inset 0 0 0 1px currentColor;
+				outline: auto 1px;
+				outline-offset: -1px;
 			}
+		}
 
-			> input:not([type=checkbox]):not([type=radio]):not([type=file]),
-			> select,
-			> textarea {
-				box-sizing: border-box;
-				min-width: clamp(3.25em, 8.5vw, 7em);
-				width: 100%;
+		&[data-component-control] > :is(input, select, textarea) {
+			background: transparent;
+			border: 0;
+			border-radius: 0;
+
+			&:focus {
+				outline: none;
 			}
+		}
 
-			&.row-actions {
-				text-align: center;
-				width: 1%;
+		> input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]) {
+			box-sizing: border-box;
+			field-sizing: content;
+			max-width: 100%;
+			min-width: 1.5em;
+
+			@media (max-width: 37.5em) {
+				max-width: 16vw;
+			}
+		}
+
+		> select,
+		> textarea {
+			box-sizing: border-box;
+			field-sizing: content;
+			min-width: clamp(3.25em, 8.5vw, 7em);
+			width: 100%;
+
+			@media (max-width: 37.5em) {
+				contain: inline-size;
+				min-width: min(12vw, 4.5em);
+			}
+		}
+
+		&.row-selection {
+			cursor: pointer;
+			text-align: center;
+			width: 1%;
+
+			> input {
+				margin: 0 6px;
+				vertical-align: middle;
 			}
 		}
 	}
 
-	> [data-add-row] {
-		margin-top: 4px;
+	&[data-component-output] {
+		background: #f4f4f4;
+
+		> tbody > tr > td {
+			line-height: normal;
+			overflow-wrap: anywhere;
+			padding: .5em;
+		}
+	}
+}
+
+article ul.object.properties > li > div:has(> table.component-table[data-component-output]) {
+	background: transparent;
+	border: 0;
+	padding: 0;
+	width: fit-content;
+
+	> table.component-table {
+		margin: 0;
 	}
 }

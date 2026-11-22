@@ -1,24 +1,15 @@
-<fieldset class="edit-components" id="{id}" data-row-token="{rowToken}">
-	<!--caption?-->
-	<legend>{caption}</legend>
-	<!--end-->
-	<table>
-		<thead>
-			<tr>
-				<!--columns-->
-				<th scope="col">{caption}</th>
-				<!--end-->
-				<th scope="col" aria-label="{rowActions}"></th>
-			</tr>
-		</thead>
-		<tbody>
-			<!--rows-->
-			{./row.html}
-			<!--end-->
-		</tbody>
-	</table>
+<!--caption?-->
+<label id="{id}-label">{caption}</label>
+<!--end-->
+<fieldset class="edit-components" id="{id}" data-row-token="{rowToken}"
+	data-if="{caption}" aria-labelledby="{id}-label" data-end
+>
+	{./table.html}
 	<input type="hidden" name="{name}._present" value="1">
-	<button type="button" data-add-row>{addRow}</button>
+	<div class="component-actions">
+		<button class="action delete" type="button" data-remove-rows hidden>{removeRows}</button>
+		<button class="action new" type="button" data-add-row aria-label="{addRow}" title="{addRow}"></button>
+	</div>
 	<template>
 		<!--template-->
 		{./row.html}

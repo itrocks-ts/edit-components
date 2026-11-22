@@ -6,14 +6,14 @@
 
 # edit-components
 
-Edits collections of component objects in a table within their parent form.
+Displays and edits collections of component objects in a table.
 
 ## Usage
 
 The framework activates the editor for properties such as `@Component() crew: CrewMember[]`.
 Each column uses the same control as a regular form, selected from the property's type and decorators.
 When the form opens, rows appear in the order declared by `@Sort` on the component class.
-Use **Add row** and **−** to change the collection, then save the parent form.
+Use **+** to add a row. Select rows to show **Delete**. Save the parent form to apply the changes.
 
 ## API
 
@@ -26,5 +26,8 @@ Row field names start at one, for example `crew.1.job`. Removing rows can leave 
 `crew._present` signals that the collection was submitted, including when all its rows were removed.
 An existing row submits its ID as `crew.1.id`. For a recursive component type, save and reopen the
 form to add a further level under a new row.
+
+`outputComponents(values, type, propertyOutput)` displays the same sorted rows and columns in a read-only table.
+The callback renders each value using the application’s normal output rules.
 
 See [dependency wiring](docs/dependencies.md) for browser activation and replacement.

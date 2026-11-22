@@ -54,6 +54,14 @@ async function sortedRows<T extends object>(values: readonly T[], type: Type<T>)
 	return rows.map(row => row.value)
 }
 
+function componentColumns<T extends object>(type: Type<T>)
+{
+	const properties = new ReflectClass(type).propertyNames
+	return displayOrderOf(type)
+		.filter(property => (property !== 'id') && properties.includes(property) && !compositeOf(type, property))
+		.map(name => ({ caption: escapeHtml(tr(displayOf(type, name))), name }))
+}
+
 export async function editComponents<T extends object>(
 	values: readonly MayEntity<T>[], type: Type<T>, field: ComponentCollectionField
 ): Promise<string>
@@ -62,34 +70,54 @@ export async function editComponents<T extends object>(
 	// Stop expanding the blank-row template when a component type repeats.
 	if (ancestors.includes(type)) return ''
 
-	const properties = new ReflectClass(type).propertyNames
-	const columns    = displayOrderOf(type).filter(property =>
-		(property !== 'id') && properties.includes(property) && !compositeOf(type, property)
-	)
-	const removeRow = escapeHtml(tr('Remove row'))
+	const columns   = componentColumns(type)
+	const selectRow = escapeHtml(tr('Select row'))
 	const rowToken  = '__itrocks_row_' + field.name.split('.').length + '__'
 	const rows      = await sortedRows(values, type)
 	const row       = async (value: MayEntity<T>, index: number | string) => {
 		const prefix = field.name + '.' + index
 		return {
-			cells: await Promise.all(columns.map(async property => ({
-				control: await renderControl<T>(value, property, prefix)
+			cells:      await Promise.all(columns.map(async ({ name }) => ({
+				content: await renderControl<T>(value, name, prefix),
+				editable: true
 			}))),
 			identifier: ('id' in value) && value.id ? escapeHtml(value.id) : '',
 			prefix,
-			removeRow
+			selectRow: selectRow + ' ' + index
 		}
 	}
 
 	return new Template({
 		addRow:     escapeHtml(tr('Add row')),
 		caption:    field.caption && escapeHtml(field.caption),
-		columns:    columns.map(property => ({ caption: escapeHtml(tr(displayOf(type, property))) })),
+		columns,
 		id:         field.id,
 		name:       field.name,
-		rowActions: escapeHtml(tr('Row actions')),
+		readOnly:   false,
+		removeRows: escapeHtml(tr('Delete')),
 		rowToken,
 		rows:       await Promise.all(rows.map((value, index) => row(value, index + 1))),
+		selectRow,
 		template:   await templateTypes.run([...ancestors, type], () => row(new type, rowToken))
 	}).parseFile(__dirname + '/edit-components.html')
+}
+
+export async function outputComponents<T extends object>(
+	values: readonly MayEntity<T>[], type: Type<T>, propertyOutput: (object: T, property: keyof T) => Promise<string>
+): Promise<string>
+{
+	const columns = componentColumns(type)
+	const rows    = await sortedRows(values, type)
+	return new Template({
+		columns,
+		readOnly: true,
+		rows: await Promise.all(rows.map(async value => ({
+			cells: await Promise.all(columns.map(async ({ name }) => ({
+				content:  await propertyOutput(value, name),
+				editable: false
+			}))),
+			selectRow: ''
+		}))),
+		selectRow: ''
+	}).parseFile(__dirname + '/table.html')
 }

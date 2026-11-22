@@ -4,6 +4,7 @@ import { TableEdit }      from '@itrocks/table/edit.js'
 import { tableByElement } from '@itrocks/table/table.js'
 
 const controlSelector = 'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+const selection       = ':scope > tr > .row-selection > input:checked'
 
 function setRowIndex(fragment: DocumentFragment, token: string, index: string)
 {
@@ -15,11 +16,14 @@ function setRowIndex(fragment: DocumentFragment, token: string, index: string)
 	}
 }
 
+build('table.component-table', () => loadCss('/@itrocks/edit-components/edit-components.css'))
+
 build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset => {
-	loadCss('/@itrocks/edit-components/edit-components.css')
 	const table    = fieldset.querySelector<HTMLTableElement>(':scope > table')!
 	const body     = table.tBodies[0]
-	const add      = fieldset.querySelector<HTMLButtonElement>(':scope > [data-add-row]')!
+	const actions  = fieldset.querySelector(':scope > .component-actions')!
+	const add      = actions.querySelector<HTMLButtonElement>('[data-add-row]')!
+	const remove   = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
 	const template = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
 	let index      = body.rows.length
 
@@ -37,17 +41,29 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 	add.addEventListener('click', () => {
 		const row = document.importNode(template.content, true)
 		setRowIndex(row, fieldset.dataset.rowToken!, String(++ index))
-		const control = row.querySelector<HTMLElement>(controlSelector)
+		const control = row.querySelector<HTMLElement>(`[data-component-control] :is(${controlSelector})`)
 		body.append(row)
 		control?.focus()
 	})
 	body.addEventListener('click', event => {
-		const button = (event.target as Element).closest('[data-remove-row]')
-		if (!button || (button.closest('tbody') !== body)) return
-		const row = button.closest('tr')!
-		const sibling = row.nextElementSibling ?? row.previousElementSibling
-		const control = sibling?.querySelector<HTMLElement>(controlSelector) ?? add
-		row.remove()
-		control.focus()
+		const cell = event.target
+		if (
+			!(cell instanceof HTMLTableCellElement)
+			|| !cell.classList.contains('row-selection')
+			|| (cell.closest('tbody') !== body)
+		) {
+			return
+		}
+		const checkbox = cell.querySelector<HTMLInputElement>('input[type=checkbox]')
+		checkbox?.click()
+		checkbox?.focus()
+	})
+	body.addEventListener('change', () => {
+		remove.hidden = !body.querySelector(selection)
+	})
+	remove.addEventListener('click', () => {
+		for (const checkbox of body.querySelectorAll(selection)) checkbox.closest('tr')!.remove()
+		remove.hidden = true
+		add.focus()
 	})
 })
