@@ -18,8 +18,7 @@ including when the table is empty. Select rows to show **Delete**. Save the pare
 Click the field label, the selection column header or the arrow below it to cycle through selecting all rows,
 clearing the selection and restoring the last partial selection for that table. Check or uncheck all rows
 individually to clear that memory and cycle between all and none. Leaving or reloading the form also clears it.
-With no rows selected, the actions hide. If you clear the selection with the arrow, it stays available until the
-pointer leaves the actions.
+With no rows selected, the actions stay visible while the pointer is inside the action bar.
 
 ## API
 

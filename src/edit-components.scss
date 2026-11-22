@@ -74,7 +74,7 @@ fieldset.edit-components {
 			transition: grid-template-rows .1s, visibility 0s .1s;
 		}
 
-		&:is([data-keep-open], :has([data-remove-rows]:not([inert]))) {
+		&:has(> div:hover, [data-remove-rows]:not([inert])) {
 			grid-template-rows: minmax(0, 1fr);
 			transition-delay: 0s;
 			visibility: visible;
