@@ -15,8 +15,11 @@ Each column uses the same control as a regular form, selected from the property'
 When the form opens, rows appear in the order declared by `@Sort` on the component class.
 Click a cell in the insertion column to add a row below it. Click the column heading to add a row at the top,
 including when the table is empty. Select rows to show **Delete**. Save the parent form to apply the changes.
-Click the field label or the arrow below the selection column to cycle through selecting all rows, clearing the
-selection and restoring the last partial selection for that table. Leaving or reloading the form clears that memory.
+Click the field label, the selection column header or the arrow below it to cycle through selecting all rows,
+clearing the selection and restoring the last partial selection for that table. Check or uncheck all rows
+individually to clear that memory and cycle between all and none. Leaving or reloading the form also clears it.
+With no rows selected, the actions hide. If you clear the selection with the arrow, it stays available until the
+pointer leaves the actions.
 
 ## API
 

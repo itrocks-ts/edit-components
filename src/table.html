@@ -4,7 +4,10 @@
 	<thead>
 		<tr>
 			<!--selectRow?-->
-			<th scope="col" aria-label="{selectRow}"></th>
+			<th class="row-selection" scope="col" aria-label="{selectRow}">
+				<button type="button" data-toggle-rows aria-label="{selectRows}" title="{selectRows}"
+					aria-pressed="false" disabled></button>
+			</th>
 			<!--end-->
 			<!--columns-->
 			<th scope="col">{caption}</th>

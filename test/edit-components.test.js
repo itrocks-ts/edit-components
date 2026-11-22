@@ -19,9 +19,10 @@ test('renders one-based sorted rows with editable fields, row ids and an empty r
 	const field = { caption: 'Lines', id: 'lines', name: 'lines' }
 	const html = await editComponents(rows, Row, field)
 
-	assert.match(html, /<label id="lines-label" for="lines-toggle-rows">Lines<\/label>/)
+	assert.match(html, /<div class="component-caption">\s*<label id="lines-label" for="lines-toggle-rows">Lines<\/label>/)
 	assert.match(html, /aria-labelledby="lines-label"/)
 	assert.match(html, /type="checkbox" aria-label="Select row 1"/)
+	assert.match(html, /<th class="row-selection"[^>]*>\s*<button type="button" data-toggle-rows/)
 	assert.match(html, /id="lines-toggle-rows" data-toggle-rows aria-label="Select rows"/)
 	assert.match(html, /class="action" type="button" data-remove-rows="Delete %count% rows" inert>Delete 1 row<\/button>/)
 	assert.match(html, /data-insert-row="after" aria-label="Insert row after"/)

@@ -21,7 +21,8 @@ fieldset.edit-components {
 			}
 		}
 
-		> :is(thead, tbody) > tr > :is(:first-child, .row-insertion) {
+		> :is(thead, tbody) > tr > .row-insertion,
+		> tbody > tr > :first-child {
 			clip-path: inset(0);
 			translate: none;
 
@@ -31,12 +32,14 @@ fieldset.edit-components {
 		}
 	}
 
-	&:not(:hover, :focus-within) > table.component-table:not(:has(> tbody > tr > .row-selection > :checked)) {
-		> :is(thead, tbody) > tr > :is(:first-child, .row-insertion) {
+	&:not(:hover, :focus-within, :where(.component-caption:has(> label:hover) + fieldset))
+	> table.component-table:not(:has(> tbody > tr > .row-selection > :checked)) {
+		> :is(thead, tbody) > tr > .row-insertion,
+		> tbody > tr > :first-child {
 			pointer-events: none;
 		}
 
-		> :is(thead, tbody) > tr > :first-child {
+		> tbody > tr > :first-child {
 			clip-path: inset(0 100% 0 0);
 			translate: 100%;
 		}
@@ -65,9 +68,16 @@ fieldset.edit-components {
 		display: grid;
 		grid-template-rows: minmax(0, 0fr);
 		overflow: clip;
+		visibility: hidden;
 
 		@media (prefers-reduced-motion: no-preference) {
-			transition: grid-template-rows .1s;
+			transition: grid-template-rows .1s, visibility 0s .1s;
+		}
+
+		&:is([data-keep-open], :has([data-remove-rows]:not([inert]))) {
+			grid-template-rows: minmax(0, 1fr);
+			transition-delay: 0s;
+			visibility: visible;
 		}
 
 		> div {
@@ -75,6 +85,7 @@ fieldset.edit-components {
 			align-self: end;
 			block-size: max-content;
 			display: flex;
+			justify-self: start;
 			padding-block: 4px 2px;
 
 			> [data-toggle-rows] {
@@ -116,12 +127,6 @@ fieldset.edit-components {
 					text-decoration-style: solid;
 				}
 			}
-		}
-	}
-
-	&:is(:hover, :focus-within, :has(> table > tbody > tr > .row-selection > :checked)) {
-		> .component-actions:has([data-toggle-rows]:enabled) {
-			grid-template-rows: minmax(0, 1fr);
 		}
 	}
 }
@@ -182,19 +187,34 @@ table.component-table > :is(thead, tbody) > tr > .row-insertion {
 ul.object.properties > li:has(> fieldset.edit-components, > div > table.component-table[data-component-output]) {
 	--selection-width: 26px;
 
-	> label {
+	> :is(label, .component-caption) {
 		min-inline-size: var(--selection-width);
+	}
 
-		&:has(+ fieldset.edit-components [data-toggle-rows]:enabled) {
+	> .component-caption {
+		background: transparent;
+		border: 0;
+		display: table-cell;
+		padding: 7px 0;
+		text-align: right;
+		vertical-align: top;
+
+		> label {
+			display: inline-block;
+			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		&:has(+ fieldset.edit-components [data-toggle-rows]:enabled) > label {
 			cursor: pointer;
 		}
 	}
 
-	> label + fieldset.edit-components > .component-actions {
+	> .component-caption + fieldset.edit-components > .component-actions {
 		margin-inline-start: calc(-1 * var(--selection-width));
 	}
 
-	> label + fieldset.edit-components > table.component-table {
+	> .component-caption + fieldset.edit-components > table.component-table {
 		border: 0;
 		margin-inline-start: calc(-1 * var(--selection-width));
 		width: calc(100% + var(--selection-width));
@@ -295,6 +315,28 @@ table.component-table {
 
 		&:last-child {
 			border-start-end-radius: 3px;
+		}
+
+		&.row-selection {
+			background: transparent;
+			position: relative;
+
+			> button {
+				background: transparent;
+				border: 0;
+				cursor: pointer;
+				inset: 0;
+				padding: 0;
+				position: absolute;
+
+				&:disabled {
+					cursor: default;
+				}
+
+				&:focus-visible {
+					outline-offset: -1px;
+				}
+			}
 		}
 	}
 

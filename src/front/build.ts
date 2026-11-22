@@ -56,18 +56,20 @@ window.addEventListener('pagehide', () => {
 })
 
 build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset => {
-	const table     = fieldset.querySelector<HTMLTableElement>(':scope > table')!
+	const table      = fieldset.querySelector<HTMLTableElement>(':scope > table')!
 	if (partialSelections.has(table)) return
 
-	const body      = table.tBodies[0]
-	const actions   = fieldset.querySelector<HTMLElement>(':scope > .component-actions')!
-	const add       = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
-	const partial   = new Set<HTMLInputElement>()
-	const remove    = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
-	const removeOne = remove.textContent!
-	const template  = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
-	const toggle    = actions.querySelector<HTMLButtonElement>('[data-toggle-rows]')!
-	let index       = body.rows.length
+	const body       = table.tBodies[0]
+	const actions    = fieldset.querySelector<HTMLElement>(':scope > .component-actions')!
+	const actionRow  = actions.firstElementChild!
+	const add        = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
+	const headToggle = table.tHead!.querySelector<HTMLButtonElement>('[data-toggle-rows]')!
+	const partial    = new Set<HTMLInputElement>()
+	const remove     = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
+	const removeOne  = remove.textContent!
+	const template   = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
+	const toggle     = actions.querySelector<HTMLButtonElement>('[data-toggle-rows]')!
+	let index        = body.rows.length
 	partialSelections.set(table, partial)
 
 	const plugin = new TableEdit({
@@ -92,21 +94,36 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 		control?.focus()
 	}
 
-	function updateSelection()
+	function updateSelection(manual = false)
 	{
 		const checked = body.querySelectorAll<HTMLInputElement>(selection)
 		const count   = checked.length
 		const mixed   = count > 0 && count < body.rows.length
+		actions.removeAttribute('data-keep-open')
+		if (mixed || manual) partial.clear()
 		if (mixed) {
-			partial.clear()
 			for (const checkbox of checked) partial.add(checkbox)
 		}
 
-		toggle.disabled = !body.rows.length
-		toggle.setAttribute('aria-pressed', mixed ? 'mixed' : String(count > 0))
+		for (const button of [headToggle, toggle]) {
+			button.disabled = !body.rows.length
+			button.setAttribute('aria-pressed', mixed ? 'mixed' : String(count > 0))
+		}
 		remove.inert = !count
 		if (!count) return
 		remove.textContent = (count === 1) ? removeOne : remove.dataset.removeRows!.replace('%count%', String(count))
+	}
+
+	function rotateSelection(keepActionsOpen = false)
+	{
+		const checkboxes = [...body.querySelectorAll<HTMLInputElement>(rowCheckboxes)]
+		const count      = checkboxes.filter(checkbox => checkbox.checked).length
+		const restore    = !count && checkboxes.some(checkbox => partial.has(checkbox))
+		for (const checkbox of checkboxes) {
+			checkbox.checked = restore ? partial.has(checkbox) : (count < checkboxes.length)
+		}
+		updateSelection()
+		actions.toggleAttribute('data-keep-open', count > 0 && count === checkboxes.length && keepActionsOpen)
 	}
 
 	add.addEventListener('click', () => insertRow(body.firstElementChild))
@@ -126,16 +143,19 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 	body.addEventListener('change', event => {
 		const checkbox = event.target
 		if (checkbox instanceof HTMLInputElement && checkbox.matches('.row-selection > input[type=checkbox]')
-			&& checkbox.closest('table') === table) updateSelection()
+			&& checkbox.closest('table') === table) updateSelection(true)
 	})
-	toggle.addEventListener('click', () => {
-		const checkboxes = [...body.querySelectorAll<HTMLInputElement>(rowCheckboxes)]
-		const count      = checkboxes.filter(checkbox => checkbox.checked).length
-		const restore    = !count && checkboxes.some(checkbox => partial.has(checkbox))
-		for (const checkbox of checkboxes) {
-			checkbox.checked = restore ? partial.has(checkbox) : (count < checkboxes.length)
-		}
-		updateSelection()
+	headToggle.addEventListener('click', () => rotateSelection())
+	toggle.addEventListener('click', event => {
+		// The label forwards both clicks and :hover to the button.
+		const fromArrow = event.detail
+			? document.elementFromPoint(event.clientX, event.clientY) === toggle
+			: toggle.matches(':focus-visible')
+		rotateSelection(fromArrow)
+	})
+	actionRow.addEventListener('pointerleave', () => actions.removeAttribute('data-keep-open'))
+	toggle.addEventListener('blur', () => {
+		if (!actionRow.matches(':hover')) actions.removeAttribute('data-keep-open')
 	})
 	remove.addEventListener('click', () => {
 		for (const checkbox of body.querySelectorAll<HTMLInputElement>(selection)) {
