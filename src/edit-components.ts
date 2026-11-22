@@ -97,10 +97,11 @@ export async function editComponents<T extends object>(
 		name:        field.name,
 		readOnly:    false,
 		removeRow:   escapeHtml(tr('Delete 1 row')),
-		removeRows:  escapeHtml(tr('Delete $1 rows')),
+		removeRows:  escapeHtml(tr('Delete $1 rows', ['%count%'])),
 		rowToken,
 		rows:        await Promise.all(rows.map((value, index) => row(value, index + 1))),
 		selectRow,
+		selectRows:  escapeHtml(tr('Select rows')),
 		template:    await templateTypes.run([...ancestors, type], () => row(new type, rowToken))
 	}).parseFile(__dirname + '/edit-components.html')
 }

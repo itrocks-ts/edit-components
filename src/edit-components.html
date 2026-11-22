@@ -1,14 +1,16 @@
 <!--caption?-->
-<label id="{id}-label">{caption}</label>
+<label id="{id}-label" for="{id}-toggle-rows">{caption}</label>
 <!--end-->
 <fieldset class="edit-components" id="{id}" data-row-token="{rowToken}"
 	data-if="{caption}" aria-labelledby="{id}-label" data-end
 >
 	{./table.html}
 	<input type="hidden" name="{name}._present" value="1">
-	<div class="component-actions" inert>
+	<div class="component-actions">
 		<div>
-			<button class="action" type="button" data-remove-rows="{removeRows}">{removeRow}</button>
+			<button type="button" id="{id}-toggle-rows" data-toggle-rows aria-label="{selectRows}" title="{selectRows}"
+				aria-pressed="false" disabled></button>
+			<button class="action" type="button" data-remove-rows="{removeRows}" inert>{removeRow}</button>
 		</div>
 	</div>
 	<template>

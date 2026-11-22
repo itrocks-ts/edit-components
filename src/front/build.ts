@@ -3,8 +3,10 @@ import { build }          from '@itrocks/build/build.js'
 import { TableEdit }      from '@itrocks/table/edit.js'
 import { tableByElement } from '@itrocks/table/table.js'
 
-const controlSelector = 'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
-const selection       = ':scope > tr > .row-selection > input:checked'
+const controlSelector   = 'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+const partialSelections = new WeakMap<HTMLTableElement, Set<HTMLInputElement>>()
+const rowCheckboxes     = ':scope > tr > .row-selection > input[type=checkbox]'
+const selection         = rowCheckboxes + ':checked'
 
 function setRowIndex(fragment: DocumentFragment, token: string, index: string)
 {
@@ -47,15 +49,26 @@ function numberRows(body: HTMLTableSectionElement, inserting: boolean)
 
 build('table.component-table', () => loadCss('/@itrocks/edit-components/edit-components.css'))
 
+window.addEventListener('pagehide', () => {
+	for (const table of document.querySelectorAll<HTMLTableElement>('fieldset.edit-components > table')) {
+		partialSelections.get(table)?.clear()
+	}
+})
+
 build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset => {
 	const table     = fieldset.querySelector<HTMLTableElement>(':scope > table')!
+	if (partialSelections.has(table)) return
+
 	const body      = table.tBodies[0]
 	const actions   = fieldset.querySelector<HTMLElement>(':scope > .component-actions')!
 	const add       = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
+	const partial   = new Set<HTMLInputElement>()
 	const remove    = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
 	const removeOne = remove.textContent!
 	const template  = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
+	const toggle    = actions.querySelector<HTMLButtonElement>('[data-toggle-rows]')!
 	let index       = body.rows.length
+	partialSelections.set(table, partial)
 
 	const plugin = new TableEdit({
 		control: cell => cell.matches('[data-component-control]')
@@ -75,7 +88,25 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 		const control = row.querySelector<HTMLElement>(`[data-component-control] :is(${controlSelector})`)
 		body.insertBefore(row, before)
 		numberRows(body, true)
+		updateSelection()
 		control?.focus()
+	}
+
+	function updateSelection()
+	{
+		const checked = body.querySelectorAll<HTMLInputElement>(selection)
+		const count   = checked.length
+		const mixed   = count > 0 && count < body.rows.length
+		if (mixed) {
+			partial.clear()
+			for (const checkbox of checked) partial.add(checkbox)
+		}
+
+		toggle.disabled = !body.rows.length
+		toggle.setAttribute('aria-pressed', mixed ? 'mixed' : String(count > 0))
+		remove.inert = !count
+		if (!count) return
+		remove.textContent = (count === 1) ? removeOne : remove.dataset.removeRows!.replace('%count%', String(count))
 	}
 
 	add.addEventListener('click', () => insertRow(body.firstElementChild))
@@ -92,16 +123,28 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 		checkbox?.click()
 		checkbox?.focus()
 	})
-	body.addEventListener('change', () => {
-		const count = body.querySelectorAll(selection).length
-		actions.inert = !count
-		if (!count) return
-		remove.textContent = (count === 1) ? removeOne : remove.dataset.removeRows!.replace('$1', String(count))
+	body.addEventListener('change', event => {
+		const checkbox = event.target
+		if (checkbox instanceof HTMLInputElement && checkbox.matches('.row-selection > input[type=checkbox]')
+			&& checkbox.closest('table') === table) updateSelection()
+	})
+	toggle.addEventListener('click', () => {
+		const checkboxes = [...body.querySelectorAll<HTMLInputElement>(rowCheckboxes)]
+		const count      = checkboxes.filter(checkbox => checkbox.checked).length
+		const restore    = !count && checkboxes.some(checkbox => partial.has(checkbox))
+		for (const checkbox of checkboxes) {
+			checkbox.checked = restore ? partial.has(checkbox) : (count < checkboxes.length)
+		}
+		updateSelection()
 	})
 	remove.addEventListener('click', () => {
-		for (const checkbox of body.querySelectorAll(selection)) checkbox.closest('tr')!.remove()
+		for (const checkbox of body.querySelectorAll<HTMLInputElement>(selection)) {
+			partial.delete(checkbox)
+			checkbox.closest('tr')!.remove()
+		}
 		numberRows(body, false)
-		actions.inert = true
+		updateSelection()
 		add.focus()
 	})
+	updateSelection()
 })
