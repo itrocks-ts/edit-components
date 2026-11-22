@@ -103,6 +103,11 @@ table.component-table {
 		padding: 6px;
 		text-align: left;
 		vertical-align: top;
+		white-space: nowrap;
+
+		@media (max-width: 21em) {
+			white-space: normal;
+		}
 
 		&:first-child {
 			border-start-start-radius: 3px;
@@ -184,7 +189,8 @@ table.component-table {
 			text-align: center;
 			width: 1%;
 
-			> input {
+			> input[type=checkbox] {
+				cursor: inherit;
 				margin: 0 6px;
 				vertical-align: middle;
 			}
