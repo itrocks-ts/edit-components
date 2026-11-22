@@ -1,3 +1,8 @@
+form ul.object.properties > li:has(> fieldset.edit-components)::before {
+	content: '';
+	display: table-cell;
+}
+
 fieldset.edit-components {
 	border: 0;
 	margin: 0;
@@ -28,7 +33,7 @@ fieldset.edit-components {
 			> select,
 			> textarea {
 				box-sizing: border-box;
-				min-width: 7em;
+				min-width: clamp(3.25em, 8.5vw, 7em);
 				width: 100%;
 			}
 

@@ -64,5 +64,5 @@
 		"build": "tsc && tsc -p src/front && node -e \"const fs=require('node:fs'); for(const name of ['edit-components.html','row.html']) fs.copyFileSync('src/'+name,'cjs/'+name)\" && sass --no-source-map src/edit-components.scss:edit-components.css",
 		"test": "npm run build && node --test --test-isolation=none test/*.test.js"
 	},
-	"version": "0.0.1"
+	"version": "0.0.2"
 }
