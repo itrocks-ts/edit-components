@@ -24,7 +24,7 @@ fieldset.edit-components {
 
 		> :is(thead, tbody) > tr > :is(:first-child, .row-insertion) {
 			clip-path: inset(0);
-			translate: 0;
+			translate: none;
 
 			@media (prefers-reduced-motion: no-preference) {
 				transition: background-color .1s, clip-path .1s, translate .1s;
@@ -94,16 +94,17 @@ fieldset.edit-components {
 }
 
 table.component-table > :is(thead, tbody) > tr > .row-insertion {
-	overflow: hidden;
 	position: relative;
 	width: 1%;
 
-	&:has(> [data-insert-row]:is(:hover, :focus-visible)) {
-		background-color: #f4f4f4;
-	}
+	cursor: pointer;
 
-	&:has(> [data-insert-row=first]:is(:hover, :focus-visible)) {
-		background-color: #eee;
+	&:is(:hover, :has(> button:focus-visible)) {
+		background-color: #f4f4f4;
+
+		&:has(> [data-insert-row=first]) {
+			background-color: #eee;
+		}
 	}
 
 	> button {
@@ -204,6 +205,8 @@ ul.object.properties > li:has(> fieldset.edit-components, > div > table.componen
 }
 
 table.component-table {
+	--row-separator: #ddd;
+
 	border: 1px solid #ddd;
 	border-collapse: separate;
 	border-radius: 4px;
@@ -226,14 +229,16 @@ table.component-table {
 		}
 	}
 
-	> thead:has(> tr > .row-insertion > button:is(:hover, :focus-visible)) + tbody > tr:first-child > td:not(.row-selection),
-	> tbody > tr:has(> .row-insertion > button:is(:hover, :focus-visible)) + tr > td:not(.row-selection) {
-		border-top-color: #666;
+	> thead:has(> tr > .row-insertion:is(:hover, :has(> button:focus-visible))) + tbody > tr:first-child,
+	> tbody > tr:has(> .row-insertion:is(:hover, :has(> button:focus-visible))) + tr {
+		--row-separator: #666;
 	}
 
-	&:not(:has(> tbody > tr)) > thead > tr:has(> .row-insertion > button:is(:hover, :focus-visible)) > th:not(:first-child),
-	> tbody > tr:last-child:has(> .row-insertion > button:is(:hover, :focus-visible)) > td:not(.row-selection) {
-		box-shadow: inset 0 -1px #666;
+	&:not(:has(> tbody > tr)) > thead > tr:has(> .row-insertion:is(:hover, :has(> button:focus-visible))),
+	> tbody > tr:last-child:has(> .row-insertion:is(:hover, :has(> button:focus-visible))) {
+		> :not(:first-child) {
+			box-shadow: inset 0 -1px #666;
+		}
 	}
 
 	> thead > tr > th {
@@ -276,8 +281,16 @@ table.component-table {
 	}
 
 	> tbody > tr > td {
-		border-top: 1px solid #ddd;
+		border-top: 1px solid var(--row-separator);
 		padding: 0;
+
+		&.row-insertion {
+			border-top: 0;
+
+			> button {
+				border-top: 1px solid var(--row-separator);
+			}
+		}
 
 		&[data-component-control] {
 			cursor: text;
@@ -338,13 +351,32 @@ table.component-table {
 
 	&[data-component-output] {
 		background: #f4f4f4;
+		border: 0;
+		padding-inline: 1px;
+
+		> thead > tr > th {
+			padding-block-start: 7px;
+		}
+
+		> :is(thead, tbody) > tr > :is(th, td) + :is(th, td) {
+			border-inline-start-color: transparent;
+		}
 
 		> tbody > tr > td {
 			block-size: 1lh;
+			border-top-color: #fcfcfc;
 			box-sizing: content-box;
 			line-height: normal;
 			overflow-wrap: anywhere;
 			padding: .5em;
+		}
+
+		&:not(:has(> tbody > tr)) > thead > tr > th {
+			padding-block-end: 7px;
+		}
+
+		> tbody > tr:last-child > td {
+			padding-block-end: calc(.5em + 1px);
 		}
 	}
 }
@@ -355,17 +387,7 @@ article ul.object.properties > li > div:has(> table.component-table[data-compone
 	padding: 0;
 	width: fit-content;
 
-	> table.component-table {
-		border-block: 0;
+	> table.component-table[data-component-output] {
 		margin: 0;
-
-		> thead > tr > th {
-			border-block-start: 1px solid #ddd;
-		}
-
-		&:not(:has(> tbody > tr)) > thead > tr > th,
-		> tbody > tr:last-child > td {
-			border-block-end: 1px solid #ddd;
-		}
 	}
 }

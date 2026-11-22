@@ -81,8 +81,9 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 	body.addEventListener('click', event => {
 		const target = event.target
 		if (!(target instanceof HTMLElement) || (target.closest('table') !== table)) return
-		if (target instanceof HTMLButtonElement && target.matches('[data-insert-row]')) {
-			insertRow(target.closest('tr')!.nextElementSibling)
+		const cell = target.closest('td')
+		if (cell?.classList.contains('row-insertion')) {
+			insertRow(cell.parentElement!.nextElementSibling)
 			return
 		}
 		if (!(target instanceof HTMLTableCellElement) || !target.classList.contains('row-selection')) return
