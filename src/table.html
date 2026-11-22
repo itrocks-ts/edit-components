@@ -1,4 +1,6 @@
-<table class="component-table" data-if="{readOnly}" data-component-output data-end>
+<table class="component-table" data-if="{readOnly}" data-component-output data-end
+	data-if="{insertFirst}" tabindex="-1" data-end
+>
 	<thead>
 		<tr>
 			<!--selectRow?-->
@@ -6,6 +8,13 @@
 			<!--end-->
 			<!--columns-->
 			<th scope="col">{caption}</th>
+			<!--end-->
+			<!--insertFirst?-->
+			<th class="row-insertion" scope="col">
+				<button type="button" data-insert-row="first" aria-label="{insertFirst}" title="{insertFirst}">
+					<span aria-hidden="true">+</span>
+				</button>
+			</th>
 			<!--end-->
 		</tr>
 	</thead>

@@ -6,9 +6,10 @@
 >
 	{./table.html}
 	<input type="hidden" name="{name}._present" value="1">
-	<div class="component-actions">
-		<button class="action delete" type="button" data-remove-rows hidden>{removeRows}</button>
-		<button class="action new" type="button" data-add-row aria-label="{addRow}" title="{addRow}"></button>
+	<div class="component-actions" inert>
+		<div>
+			<button class="action delete" type="button" data-remove-rows>{removeRows}</button>
+		</div>
 	</div>
 	<template>
 		<!--template-->

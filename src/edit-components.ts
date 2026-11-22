@@ -70,11 +70,12 @@ export async function editComponents<T extends object>(
 	// Stop expanding the blank-row template when a component type repeats.
 	if (ancestors.includes(type)) return ''
 
-	const columns   = componentColumns(type)
-	const selectRow = escapeHtml(tr('Select row'))
-	const rowToken  = '__itrocks_row_' + field.name.split('.').length + '__'
-	const rows      = await sortedRows(values, type)
-	const row       = async (value: MayEntity<T>, index: number | string) => {
+	const columns     = componentColumns(type)
+	const insertAfter = escapeHtml(tr('Insert row after'))
+	const selectRow   = escapeHtml(tr('Select row'))
+	const rowToken    = '__itrocks_row_' + field.name.split('.').length + '__'
+	const rows        = await sortedRows(values, type)
+	const row         = async (value: MayEntity<T>, index: number | string) => {
 		const prefix = field.name + '.' + index
 		return {
 			cells:      await Promise.all(columns.map(async ({ name }) => ({
@@ -82,23 +83,24 @@ export async function editComponents<T extends object>(
 				editable: true
 			}))),
 			identifier: ('id' in value) && value.id ? escapeHtml(value.id) : '',
+			insertAfter,
 			prefix,
 			selectRow: selectRow + ' ' + index
 		}
 	}
 
 	return new Template({
-		addRow:     escapeHtml(tr('Add row')),
-		caption:    field.caption && escapeHtml(field.caption),
+		caption:     field.caption && escapeHtml(field.caption),
 		columns,
-		id:         field.id,
-		name:       field.name,
-		readOnly:   false,
-		removeRows: escapeHtml(tr('Delete')),
+		id:          field.id,
+		insertFirst: escapeHtml(tr('Insert first row')),
+		name:        field.name,
+		readOnly:    false,
+		removeRows:  escapeHtml(tr('Delete')),
 		rowToken,
-		rows:       await Promise.all(rows.map((value, index) => row(value, index + 1))),
+		rows:        await Promise.all(rows.map((value, index) => row(value, index + 1))),
 		selectRow,
-		template:   await templateTypes.run([...ancestors, type], () => row(new type, rowToken))
+		template:    await templateTypes.run([...ancestors, type], () => row(new type, rowToken))
 	}).parseFile(__dirname + '/edit-components.html')
 }
 

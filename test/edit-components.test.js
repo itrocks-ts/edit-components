@@ -22,7 +22,10 @@ test('renders one-based sorted rows with editable fields, row ids and an empty r
 	assert.match(html, /<label id="lines-label">Lines<\/label>/)
 	assert.match(html, /aria-labelledby="lines-label"/)
 	assert.match(html, /type="checkbox" aria-label="Select row 1"/)
-	assert.match(html, /class="action delete" type="button" data-remove-rows hidden>Delete<\/button>/)
+	assert.match(html, /class="component-actions" inert/)
+	assert.match(html, /class="action delete" type="button" data-remove-rows>Delete<\/button>/)
+	assert.match(html, /data-insert-row="after" aria-label="Insert row after"/)
+	assert.equal((html.match(/data-insert-row="after"/g) ?? []).length, rows.length + 1)
 	assert.match(html, /name="lines\.1\.id" value="12"/)
 	assert.match(html, /name="lines\.2\.id" value="14"/)
 	assert.match(html, /name="lines\.1\.label"[^>]*value="First"/)
@@ -36,7 +39,7 @@ test('renders one-based sorted rows with editable fields, row ids and an empty r
 test('renders columns and an add button for an empty collection', async () => {
 	const html = await editComponents([], Row, { id: 'lines', name: 'lines' })
 	assert.match(html, /<th scope="col">Label<\/th>/i)
-	assert.match(html, /<button class="action new" type="button" data-add-row aria-label="Add row"/)
+	assert.match(html, /<button type="button" data-insert-row="first" aria-label="Insert first row"/)
 	assert.doesNotMatch(html, /<label|aria-labelledby|name="lines\.1\./)
 })
 
@@ -48,5 +51,5 @@ test('renders sorted component values in the same columns without editing contro
 	assert.match(html, /<table class="component-table" data-component-output\s*>/)
 	assert.match(html, /<th scope="col">Label<\/th>[\s\S]*<th scope="col">Order<\/th>/i)
 	assert.match(html, /<td\s*>First<\/td>[\s\S]*<td\s*>2<\/td>[\s\S]*<td\s*>Later<\/td>[\s\S]*<td\s*>10<\/td>/)
-	assert.doesNotMatch(html, /<input|<button|data-component-control|row-selection|<th[^>]*>Owner/i)
+	assert.doesNotMatch(html, /<input|<button|data-component-control|row-insertion|row-selection|<th[^>]*>Owner/i)
 })

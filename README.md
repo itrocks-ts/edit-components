@@ -13,7 +13,8 @@ Displays and edits collections of component objects in a table.
 The framework activates the editor for properties such as `@Component() crew: CrewMember[]`.
 Each column uses the same control as a regular form, selected from the property's type and decorators.
 When the form opens, rows appear in the order declared by `@Sort` on the component class.
-Use **+** to add a row. Select rows to show **Delete**. Save the parent form to apply the changes.
+Click a cell in the insertion column to add a row below it. Click the column heading to add a row at the top,
+including when the table is empty. Select rows to show **Delete**. Save the parent form to apply the changes.
 
 ## API
 
@@ -22,7 +23,7 @@ Pass the current component objects, their class, and the parent field's HTML `id
 with an optional plain-text `caption`. Use the `id` and `name` returned by `controlField` in
 [`@itrocks/form-controls`](https://github.com/itrocks-ts/form-controls).
 
-Row field names start at one, for example `crew.1.job`. Removing rows can leave gaps. A hidden
+Row field names follow the visible positions, starting at one, for example `crew.1.job`. A hidden
 `crew._present` signals that the collection was submitted, including when all its rows were removed.
 An existing row submits its ID as `crew.1.id`. For a recursive component type, save and reopen the
 form to add a further level under a new row.

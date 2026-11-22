@@ -1,6 +1,5 @@
 @import url('../action-bar/action.css');
 @import url('../delete/css/action.css');
-@import url('../new/css/action.css');
 
 fieldset.edit-components {
 	border: 0;
@@ -12,36 +11,149 @@ fieldset.edit-components {
 
 	> table.component-table {
 		width: 100%;
-	}
 
-	> .component-actions {
-		display: flex;
-		gap: 4px;
-		justify-content: flex-end;
-		margin-top: 4px;
+		> thead > tr > th {
+			@media (max-width: 23em) {
+				white-space: normal;
+			}
 
-		> [data-remove-rows] {
-			margin-inline-end: auto;
-
-			&[hidden] {
-				display: block;
-				visibility: hidden;
+			@media (max-width: 21em) {
+				padding-inline: 2px;
 			}
 		}
 
-		> [data-add-row] {
-			min-width: 26px;
-			padding: 0;
+		> :is(thead, tbody) > tr > :is(:first-child, .row-insertion) {
+			clip-path: inset(0);
+			translate: 0;
+
+			@media (prefers-reduced-motion: no-preference) {
+				transition: background-color .1s, clip-path .1s, translate .1s;
+			}
+		}
+
+		&:not(:hover, :focus-within, :has(> tbody > tr > .row-selection > :checked)) {
+			> :is(thead, tbody) > tr > :is(:first-child, .row-insertion) {
+				pointer-events: none;
+			}
+
+			> :is(thead, tbody) > tr > :first-child {
+				clip-path: inset(0 100% 0 0);
+				translate: 100%;
+			}
+
+			> :is(thead, tbody) > tr > .row-insertion {
+				clip-path: inset(0 0 0 100%);
+				translate: -100%;
+			}
+
+			> :is(thead, tbody) > tr > :nth-last-child(2) {
+				box-shadow: inset -1px 0 #ddd;
+			}
+
+			> thead > tr > :nth-last-child(2) {
+				border-start-end-radius: 4px;
+			}
+
+			&:not(:has(> tbody > tr)) > thead > tr > :nth-last-child(2),
+			> tbody > tr:last-child > :nth-last-child(2) {
+				border-end-end-radius: 4px;
+			}
+		}
+	}
+
+	> .component-actions {
+		align-content: end;
+		display: grid;
+		grid-template-rows: minmax(0, 0fr);
+		overflow: clip;
+
+		@media (prefers-reduced-motion: no-preference) {
+			transition: grid-template-rows .1s;
+		}
+
+		&:not([inert]) {
+			grid-template-rows: minmax(0, 1fr);
+		}
+
+		> div {
+			align-items: center;
+			align-self: end;
+			block-size: max-content;
+			display: flex;
+			padding-block: 4px 2px;
+
+			&::before {
+				background: #666;
+				block-size: 20px;
+				content: '';
+				inline-size: var(--selection-width, 26px);
+				mask: url('selection-arrow.svg') center / contain no-repeat;
+			}
 		}
 	}
 }
 
+table.component-table > :is(thead, tbody) > tr > .row-insertion {
+	overflow: hidden;
+	position: relative;
+	width: 1%;
+
+	&:has(> [data-insert-row]:is(:hover, :focus-visible)) {
+		background-color: #f4f4f4;
+	}
+
+	&:has(> [data-insert-row=first]:is(:hover, :focus-visible)) {
+		background-color: #eee;
+	}
+
+	> button {
+		align-items: center;
+		background: transparent;
+		border: 0;
+		border-radius: 0;
+		color: inherit;
+		cursor: pointer;
+		display: flex;
+		inset: 0;
+		justify-content: center;
+		line-height: inherit;
+		padding: 0;
+		position: absolute;
+
+		&:focus-visible {
+			outline-offset: -1px;
+		}
+
+		> span {
+			font-size: 18px;
+			font-weight: 300;
+			inline-size: 18px;
+			pointer-events: none;
+			text-align: center;
+		}
+	}
+
+	> [data-insert-row=first] {
+		margin-inline: auto;
+		position: static;
+
+		&::after {
+			content: '';
+			inset: 0;
+			position: absolute;
+		}
+	}
+}
 
 ul.object.properties > li:has(> fieldset.edit-components, > div > table.component-table[data-component-output]) {
 	--selection-width: 26px;
 
 	> label {
 		min-inline-size: var(--selection-width);
+	}
+
+	> label + fieldset.edit-components > .component-actions {
+		margin-inline-start: calc(-1 * var(--selection-width));
 	}
 
 	> label + fieldset.edit-components > table.component-table {
@@ -97,6 +209,32 @@ table.component-table {
 	border-radius: 4px;
 	border-spacing: 0;
 	width: fit-content;
+
+	> tbody > tr > .row-insertion:not(:focus-within) > button > span {
+		visibility: hidden;
+	}
+
+	&:not(:has(> :is(thead, tbody) > tr > .row-insertion:focus-within)) {
+		> tbody > tr > .row-insertion:hover > button > span {
+			visibility: visible;
+		}
+	}
+
+	&:has(> tbody > tr > .row-insertion:is(:hover, :focus-within)) {
+		> thead > tr > .row-insertion:not(:focus-within) > button > span {
+			visibility: hidden;
+		}
+	}
+
+	> thead:has(> tr > .row-insertion > button:is(:hover, :focus-visible)) + tbody > tr:first-child > td:not(.row-selection),
+	> tbody > tr:has(> .row-insertion > button:is(:hover, :focus-visible)) + tr > td:not(.row-selection) {
+		border-top-color: #666;
+	}
+
+	&:not(:has(> tbody > tr)) > thead > tr:has(> .row-insertion > button:is(:hover, :focus-visible)) > th:not(:first-child),
+	> tbody > tr:last-child:has(> .row-insertion > button:is(:hover, :focus-visible)) > td:not(.row-selection) {
+		box-shadow: inset 0 -1px #666;
+	}
 
 	> thead > tr > th {
 		background: #f8f8f8;
@@ -154,6 +292,7 @@ table.component-table {
 			background: transparent;
 			border: 0;
 			border-radius: 0;
+			line-height: normal;
 
 			&:focus {
 				outline: none;
@@ -201,6 +340,8 @@ table.component-table {
 		background: #f4f4f4;
 
 		> tbody > tr > td {
+			block-size: 1lh;
+			box-sizing: content-box;
 			line-height: normal;
 			overflow-wrap: anywhere;
 			padding: .5em;
@@ -215,6 +356,16 @@ article ul.object.properties > li > div:has(> table.component-table[data-compone
 	width: fit-content;
 
 	> table.component-table {
+		border-block: 0;
 		margin: 0;
+
+		> thead > tr > th {
+			border-block-start: 1px solid #ddd;
+		}
+
+		&:not(:has(> tbody > tr)) > thead > tr > th,
+		> tbody > tr:last-child > td {
+			border-block-end: 1px solid #ddd;
+		}
 	}
 }
