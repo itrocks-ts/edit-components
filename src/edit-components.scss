@@ -1,5 +1,4 @@
 @import url('../action-bar/action.css');
-@import url('../delete/css/action.css');
 
 fieldset.edit-components {
 	border: 0;
@@ -88,6 +87,18 @@ fieldset.edit-components {
 				content: '';
 				inline-size: var(--selection-width, 26px);
 				mask: url('selection-arrow.svg') center / contain no-repeat;
+			}
+
+			> [data-remove-rows] {
+				background-color: transparent;
+				border: 0;
+				padding-inline: 4px 8px;
+				text-decoration: underline dotted;
+
+				&:hover {
+					background-color: #f4f4f4;
+					text-decoration-style: solid;
+				}
 			}
 		}
 	}

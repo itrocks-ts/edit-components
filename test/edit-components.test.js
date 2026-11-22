@@ -23,7 +23,7 @@ test('renders one-based sorted rows with editable fields, row ids and an empty r
 	assert.match(html, /aria-labelledby="lines-label"/)
 	assert.match(html, /type="checkbox" aria-label="Select row 1"/)
 	assert.match(html, /class="component-actions" inert/)
-	assert.match(html, /class="action delete" type="button" data-remove-rows>Delete<\/button>/)
+	assert.match(html, /class="action" type="button" data-remove-rows="Delete \$1 rows">Delete 1 row<\/button>/)
 	assert.match(html, /data-insert-row="after" aria-label="Insert row after"/)
 	assert.equal((html.match(/data-insert-row="after"/g) ?? []).length, rows.length + 1)
 	assert.match(html, /name="lines\.1\.id" value="12"/)

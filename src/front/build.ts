@@ -48,13 +48,14 @@ function numberRows(body: HTMLTableSectionElement, inserting: boolean)
 build('table.component-table', () => loadCss('/@itrocks/edit-components/edit-components.css'))
 
 build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset => {
-	const table    = fieldset.querySelector<HTMLTableElement>(':scope > table')!
-	const body     = table.tBodies[0]
-	const actions  = fieldset.querySelector<HTMLElement>(':scope > .component-actions')!
-	const add      = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
-	const remove   = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
-	const template = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
-	let index      = body.rows.length
+	const table     = fieldset.querySelector<HTMLTableElement>(':scope > table')!
+	const body      = table.tBodies[0]
+	const actions   = fieldset.querySelector<HTMLElement>(':scope > .component-actions')!
+	const add       = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
+	const remove    = actions.querySelector<HTMLButtonElement>('[data-remove-rows]')!
+	const removeOne = remove.textContent!
+	const template  = fieldset.querySelector<HTMLTemplateElement>(':scope > template')!
+	let index       = body.rows.length
 
 	const plugin = new TableEdit({
 		control: cell => cell.matches('[data-component-control]')
@@ -92,7 +93,10 @@ build<HTMLFieldSetElement>('fieldset.edit-components[data-row-token]', fieldset 
 		checkbox?.focus()
 	})
 	body.addEventListener('change', () => {
-		actions.inert = !body.querySelector(selection)
+		const count = body.querySelectorAll(selection).length
+		actions.inert = !count
+		if (!count) return
+		remove.textContent = (count === 1) ? removeOne : remove.dataset.removeRows!.replace('$1', String(count))
 	})
 	remove.addEventListener('click', () => {
 		for (const checkbox of body.querySelectorAll(selection)) checkbox.closest('tr')!.remove()
