@@ -8,6 +8,10 @@
 
 Displays and edits collections of component objects in a table.
 
+*This documentation was written by an artificial intelligence and may contain errors or approximations.
+It has not yet been fully reviewed by a human. If anything seems unclear or incomplete,
+please feel free to contact the author of this package.*
+
 ## Usage
 
 The framework activates the editor for properties such as `@Component() crew: CrewMember[]`.

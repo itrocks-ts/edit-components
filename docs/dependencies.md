@@ -1,5 +1,9 @@
 # Dependency wiring
 
+*This documentation was written by an artificial intelligence and may contain errors or approximations.
+It has not yet been fully reviewed by a human. If anything seems unclear or incomplete,
+please feel free to contact the author of this package.*
+
 The framework binds the edit and read-only renderers through
 `initCoreTransformers({ editComponents, outputComponents })`. To replace the UI, bind a renderer with the same
 signature and submit dotted row paths with the collection marker and existing row IDs.
