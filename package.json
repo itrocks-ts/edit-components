@@ -1,0 +1,68 @@
+{
+	"author": {
+		"name": "Baptiste Pillot",
+		"email": "baptiste@pillot.fr"
+	},
+	"dependencies": {
+		"@itrocks/asset-loader": "latest",
+		"@itrocks/build": "latest",
+		"@itrocks/class-type": "latest",
+		"@itrocks/composition": "latest",
+		"@itrocks/form-controls": "latest",
+		"@itrocks/property-view": "latest",
+		"@itrocks/reflect": "latest",
+		"@itrocks/sort": "latest",
+		"@itrocks/storage": "latest",
+		"@itrocks/table": "latest",
+		"@itrocks/template": "latest",
+		"@itrocks/translate": "latest"
+	},
+	"description": "Edits collections of component objects in a table within their parent form",
+	"devDependencies": {
+		"@itrocks/class-file": "latest",
+		"@itrocks/transformer": "latest",
+		"@types/node": "^24.10",
+		"sass": "^1.95",
+		"typescript": "^7.0"
+	},
+	"engines": {
+		"node": ">=24"
+	},
+	"exports": {
+		".": "./cjs/edit-components.js",
+		"./build.js": "./build.js",
+		"./edit-components.css": "./edit-components.css"
+	},
+	"files": [
+		"LICENSE",
+		"README.md",
+		"build.d.ts",
+		"build.js",
+		"cjs",
+		"docs/dependencies.md",
+		"edit-components.css",
+		"!*.map"
+	],
+	"homepage": "https://it.rocks",
+	"keywords": [
+		"backend",
+		"collection",
+		"component",
+		"edit",
+		"form",
+		"front-end",
+		"it.rocks",
+		"table"
+	],
+	"license": "ISC",
+	"name": "@itrocks/edit-components",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/itrocks-ts/edit-components.git"
+	},
+	"scripts": {
+		"build": "tsc && tsc -p src/front && node -e \"const fs=require('node:fs'); for(const name of ['edit-components.html','row.html']) fs.copyFileSync('src/'+name,'cjs/'+name)\" && sass --no-source-map src/edit-components.scss:edit-components.css",
+		"test": "npm run build && node --test --test-isolation=none test/*.test.js"
+	},
+	"version": "0.0.1"
+}

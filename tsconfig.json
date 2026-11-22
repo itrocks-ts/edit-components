@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "nodenext",
+		"outDir": "cjs",
+		"rootDir": "src",
+		"skipLibCheck": true,
+		"strict": true,
+		"types": ["node"]
+	},
+	"exclude": ["src/front"],
+	"include": ["src"]
+}

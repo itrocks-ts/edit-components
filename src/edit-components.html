@@ -1,0 +1,27 @@
+<fieldset class="edit-components" id="{id}" data-row-token="{rowToken}">
+	<!--caption?-->
+	<legend>{caption}</legend>
+	<!--end-->
+	<table>
+		<thead>
+			<tr>
+				<!--columns-->
+				<th scope="col">{caption}</th>
+				<!--end-->
+				<th scope="col" aria-label="{rowActions}"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<!--rows-->
+			{./row.html}
+			<!--end-->
+		</tbody>
+	</table>
+	<input type="hidden" name="{name}._present" value="1">
+	<button type="button" data-add-row>{addRow}</button>
+	<template>
+		<!--template-->
+		{./row.html}
+		<!--end-->
+	</template>
+</fieldset>
