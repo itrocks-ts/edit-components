@@ -82,7 +82,6 @@ build<HTMLTableElement>(tableSelector, table => {
 	const body         = table.tBodies[0]
 	const actions      = table.tFoot!
 	const add          = table.tHead!.querySelector<HTMLButtonElement>('[data-insert-row="first"]')!
-	const caption      = table.previousElementSibling?.querySelector<HTMLElement>(':scope:is(label) > [data-toggle-rows]')
 	const columns      = table.tHead!.querySelector<HTMLButtonElement>('.component-column-toggle > button')!
 	const headToggle   = table.tHead!.querySelector<HTMLInputElement>('[data-toggle-rows]')!
 	const insertion    = add.parentElement!
@@ -134,11 +133,6 @@ build<HTMLTableElement>(tableSelector, table => {
 		headToggle.indeterminate = mixed
 		toggle.disabled          = headToggle.disabled || (columns.ariaExpanded === 'false')
 		toggle.ariaPressed       = pressed
-		if (caption) {
-			caption.ariaDisabled = String(headToggle.disabled)
-			caption.ariaPressed  = pressed
-			caption.tabIndex      = headToggle.disabled ? -1 : 0
-		}
 		remove.inert = !count
 		if (!count) return
 		remove.textContent = (count === 1) ? removeOne : remove.dataset.removeRows!.replace('%count%', String(count))
@@ -156,14 +150,6 @@ build<HTMLTableElement>(tableSelector, table => {
 	}
 
 	add.addEventListener('click', () => insertRow(body.firstElementChild))
-	caption?.addEventListener('click', () => {
-		if (!headToggle.disabled) rotateSelection()
-	})
-	caption?.addEventListener('keydown', event => {
-		if ((event.key !== 'Enter') && (event.key !== ' ')) return
-		event.preventDefault()
-		if (!event.repeat) caption.click()
-	})
 	columns.addEventListener('click', () => {
 		const expanding      = columns.ariaExpanded === 'false'
 		columns.ariaExpanded = String(expanding)

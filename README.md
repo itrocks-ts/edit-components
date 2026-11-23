@@ -20,8 +20,9 @@ When the form opens, rows appear in the order declared by `@Sort` on the compone
 Open the row actions with the arrow at the right edge of the table. Use the arrow again to hide them.
 Click a cell in the insertion column to add a row below it. Click the column heading to add a row at the top,
 including when the table is empty. Select rows to show **Delete**. Save the parent form to apply the changes.
-Click the field label text, the selection column header or the arrow below it to select all rows,
-clear the selection or restore the last partial selection. The label text works with the row actions closed.
+Click the field label to focus the first editable field in the table and select its text, where applicable.
+Click the selection column header or the arrow below it to select all rows,
+clear the selection or restore the last partial selection.
 Check or uncheck all rows individually to clear that memory and cycle between all and none.
 Leaving or reloading the form also clears it.
 With no rows selected, the actions stay visible while the pointer is inside the action bar.

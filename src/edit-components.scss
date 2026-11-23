@@ -265,20 +265,6 @@ table.component-table > thead > tr > .row-insertion {
 	min-inline-size: calc(18px + 2 * var(--row-insertion-padding));
 }
 
-ul.object.properties > li > label:has(span[role=button]) {
-	padding: 0;
-
-	> span[role=button] {
-		cursor: pointer;
-		display: inline-block;
-		padding: 10px 7px;
-
-		@media (max-width: 600px) {
-			padding: 4px 7px 0;
-		}
-	}
-}
-
 table.component-table {
 	--row-separator: #ddd;
 

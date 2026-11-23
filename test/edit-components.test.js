@@ -19,12 +19,13 @@ test('renders one-based sorted rows with editable fields, row ids and an empty r
 	const field = { caption: 'Lines', id: 'lines', name: 'lines' }
 	const html = await editComponents(rows, Row, field)
 
-	assert.match(html, /<label id="lines-label">\s*<span role="button" data-toggle-rows[^>]*>Lines<\/span>\s*<\/label>/)
+	assert.match(html, /<label id="lines-label">Lines<\/label>/)
 	assert.match(html, /aria-labelledby="lines-label"/)
-	assert.match(html, /type="checkbox" aria-label="Select row 1"/)
+	assert.match(html, /type="checkbox" data-form-action aria-label="Select row 1"/)
 	assert.match(html, /<th class="row-selection"[^>]*>\s*<input type="checkbox" data-toggle-rows/)
 	assert.match(html, /<th class="component-column-toggle"[^>]*>\s*<button type="button" aria-expanded="false"/)
-	assert.match(html, /<\/td>\s*<td class="row-selection">\s*<input type="checkbox" aria-label="Select row 1"/)
+	assert.match(html,
+		/<\/td>\s*<td class="row-selection">\s*<input type="checkbox" data-form-action aria-label="Select row 1"/)
 	assert.match(html, /<td class="form-control" data-component-control[^>]*><input[^>]*name="lines\.1\.label"/)
 	assert.match(html, /<tfoot class="component-actions">\s*<tr>\s*<td colspan="3">\s*<button[^>]*data-remove-rows/)
 	assert.match(html, /<\/td>\s*<td class="row-selection">\s*<button[^>]*id="lines-toggle-rows"/)
