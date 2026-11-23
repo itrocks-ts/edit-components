@@ -4,7 +4,6 @@
 		"email": "baptiste@pillot.fr"
 	},
 	"dependencies": {
-		"@itrocks/action-bar": "latest",
 		"@itrocks/asset-loader": "latest",
 		"@itrocks/build": "latest",
 		"@itrocks/class-type": "latest",
@@ -66,5 +65,5 @@
 		"build": "tsc && tsc -p src/front && node -e \"const fs=require('node:fs'); for(const name of ['edit-components.html','row.html','table.html']) fs.copyFileSync('src/'+name,'cjs/'+name); fs.copyFileSync('src/selection-arrow.svg','selection-arrow.svg')\" && sass --no-source-map src/edit-components.scss:edit-components.css",
 		"test": "npm run build && node --test --test-isolation=none test/*.test.js"
 	},
-	"version": "0.4.0"
+	"version": "0.4.1"
 }

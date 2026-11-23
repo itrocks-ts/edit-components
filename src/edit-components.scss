@@ -1,5 +1,3 @@
-@import url('../action-bar/action.css');
-
 table.component-table[data-row-token] {
 	--column-toggle-width: 44px;
 	--selection-width: 26px;
@@ -41,44 +39,19 @@ table.component-table[data-row-token] {
 			padding: 0;
 			position: absolute;
 
-			&::before, &::after {
-				content: '';
-				grid-area: 1 / 1;
-			}
-
-			&:hover::before {
-				background: #eee;
-			}
-
 			&::after {
 				align-self: center;
 				background: currentColor;
 				block-size: 12px;
 				clip-path: polygon(0 0, 100% 50%, 0 100%);
+				content: '';
+				grid-area: 1 / 1;
 				inline-size: 8px;
 				justify-self: center;
-
-				@media (prefers-reduced-motion: no-preference) {
-					transition: rotate .1s;
-				}
 			}
 
 			&[aria-expanded=true]::after {
 				rotate: 180deg;
-			}
-		}
-	}
-
-	> :is(thead, tbody) > tr > :is(.row-insertion, .row-selection) {
-		clip-path: inset(0);
-		translate: none;
-
-		@media (prefers-reduced-motion: no-preference) {
-			transition: clip-path .1s, display .1s allow-discrete, translate .1s;
-
-			@starting-style {
-				clip-path: inset(0 0 0 100%);
-				translate: -100%;
 			}
 		}
 	}
@@ -141,10 +114,7 @@ table.component-table[data-row-token] {
 
 	&:has(> thead > tr > .component-column-toggle > [aria-expanded=false]) {
 		> :is(thead, tbody) > tr > :is(.row-selection, .row-insertion) {
-			clip-path: inset(0 0 0 100%);
 			display: none;
-			pointer-events: none;
-			translate: -100%;
 		}
 
 		> .component-actions {
@@ -177,23 +147,11 @@ table.component-table[data-row-token] {
 	}
 
 	> .component-actions {
-		--action-height: 24px;
-		--action-offset: calc(-1 * var(--action-height));
+		&:is(:hover, :has([data-remove-rows]:not([inert]))) > tr > td {
+			padding-block: 4px 2px;
 
-		visibility: hidden;
-
-		@media (prefers-reduced-motion: no-preference) {
-			transition: visibility 0s .1s;
-		}
-
-		&:is(:hover, :has([data-remove-rows]:not([inert]))) {
-			--action-offset: 0px;
-
-			transition-delay: 0s;
-			visibility: visible;
-
-			> tr > td {
-				padding-block: 4px 2px;
+			> button {
+				display: inline-flex;
 			}
 		}
 
@@ -206,26 +164,15 @@ table.component-table[data-row-token] {
 				text-align: center;
 			}
 
-			@media (prefers-reduced-motion: no-preference) {
-				transition: padding-block .1s;
-			}
-
 			> button {
 				align-items: center;
 				background: transparent;
-				block-size: var(--action-height);
+				block-size: 24px;
 				border: 0;
 				box-sizing: border-box;
-				// Clip the part that slides above the footer while the row contracts.
-				clip-path: inset(calc(-1 * var(--action-offset)) 0 0);
-				display: inline-flex;
-				margin-block-start: var(--action-offset);
+				display: none;
 				padding-block: 0;
 				vertical-align: bottom;
-
-				@media (prefers-reduced-motion: no-preference) {
-					transition: background-color .1s, clip-path .1s, margin-block-start .1s;
-				}
 
 				&:hover {
 					background-color: #f4f4f4;
@@ -253,6 +200,9 @@ table.component-table[data-row-token] {
 			}
 
 			> [data-remove-rows] {
+				border-radius: 4px;
+				cursor: pointer;
+				line-height: 16px;
 				padding-inline: 4px 8px;
 				text-decoration: underline dotted;
 
@@ -266,10 +216,6 @@ table.component-table[data-row-token] {
 			}
 		}
 	}
-}
-
-table.component-table > thead > tr > .row-insertion {
-	min-inline-size: calc(18px + 2 * var(--row-insertion-padding));
 }
 
 table.component-table > :is(thead, tbody) > tr > .row-insertion {
@@ -304,10 +250,19 @@ table.component-table > :is(thead, tbody) > tr > .row-insertion {
 		padding: 2px var(--row-insertion-padding);
 		position: absolute;
 
+		@media (forced-colors: none) {
+			background: transparent url('../form-controls/css/plus.svg') center no-repeat;
+			font-size: 0;
+		}
+
 		&:focus-visible {
 			outline-offset: -1px;
 		}
 	}
+}
+
+table.component-table > thead > tr > .row-insertion {
+	min-inline-size: calc(18px + 2 * var(--row-insertion-padding));
 }
 
 ul.object.properties > li > label:has(span[role=button]) {
@@ -403,36 +358,35 @@ table.component-table {
 				outline: auto 1px;
 				outline-offset: -1px;
 			}
-		}
 
-		&[data-component-control] > :is(input, select, textarea) {
-			background: transparent;
-			border: 0;
-			border-radius: 0;
-			line-height: normal;
-
-			&:focus {
-				outline: none;
+			> input:not([type=checkbox], [type=radio], [type=file], [type=hidden]) {
+				box-sizing: border-box;
+				field-sizing: content;
+				max-inline-size: 100cqi;
+				min-inline-size: 1.5em;
 			}
-		}
 
-		> input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]) {
-			box-sizing: border-box;
-			field-sizing: content;
-			max-inline-size: 100cqi;
-			min-inline-size: 1.5em;
-		}
+			> :is(input, select, textarea) {
+				background: transparent;
+				border: 0;
+				border-radius: 0;
+				line-height: normal;
 
-		> select,
-		> textarea {
-			box-sizing: border-box;
-			field-sizing: content;
-			min-width: clamp(3.25em, 8.5vw, 7em);
-			width: 100%;
+				&:focus {
+					outline: none;
+				}
+			}
 
-			@media (max-width: 37.5em) {
-				contain: inline-size;
-				min-width: min(12vw, 4.5em);
+			> :is(select, textarea) {
+				box-sizing: border-box;
+				field-sizing: content;
+				min-width: clamp(3.25em, 8.5vw, 7em);
+				width: 100%;
+
+				@media (max-width: 37.5em) {
+					contain: inline-size;
+					min-width: min(12vw, 4.5em);
+				}
 			}
 		}
 	}
