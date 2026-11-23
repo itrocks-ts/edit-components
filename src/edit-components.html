@@ -1,23 +1,12 @@
 <!--caption?-->
-<div class="component-caption">
-	<label id="{id}-label" for="{id}-toggle-rows">{caption}</label>
-</div>
+<label id="{id}-label">
+	<span role="button" data-toggle-rows aria-disabled="true" aria-pressed="false" tabindex="-1">{caption}</span>
+</label>
 <!--end-->
-<fieldset class="edit-components" id="{id}" data-row-token="{rowToken}"
-	data-if="{caption}" aria-labelledby="{id}-label" data-end
->
-	{./table.html}
-	<input type="hidden" name="{name}._present" value="1">
-	<div class="component-actions">
-		<div>
-			<button type="button" id="{id}-toggle-rows" data-toggle-rows aria-label="{selectRows}" title="{selectRows}"
-				aria-pressed="false" disabled></button>
-			<button class="action" type="button" data-remove-rows="{removeRows}" inert>{removeRow}</button>
-		</div>
-	</div>
-	<template>
-		<!--template-->
-		{./row.html}
-		<!--end-->
-	</template>
-</fieldset>
+{./table.html}
+<template>
+	<!--template-->
+	{./row.html}
+	<!--end-->
+</template>
+<input type="hidden" name="{name}._present" value="1">

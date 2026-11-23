@@ -1,107 +1,246 @@
 @import url('../action-bar/action.css');
 
-fieldset.edit-components {
+table.component-table[data-row-token] {
+	--column-toggle-width: 44px;
+	--selection-width: 26px;
+
 	border: 0;
-	inline-size: fit-content;
-	margin: 0;
 	max-inline-size: 100%;
-	min-width: 0;
-	padding: 0;
+	position: relative;
 
-	> table.component-table {
-		width: 100%;
+	> thead > tr > th {
+		border-top: 1px solid #ddd;
 
-		> thead > tr > th {
-			@media (max-width: 23em) {
-				white-space: normal;
-			}
-
-			@media (max-width: 21em) {
-				padding-inline: 2px;
-			}
+		@media (max-width: 23em) {
+			white-space: normal;
 		}
 
-		> :is(thead, tbody) > tr > .row-insertion,
-		> tbody > tr > :first-child {
-			clip-path: inset(0);
-			translate: none;
+		@media (max-width: 21em) {
+			padding-inline: 2px;
+		}
+	}
 
-			@media (prefers-reduced-motion: no-preference) {
-				transition: background-color .1s, clip-path .1s, translate .1s;
+	> thead > tr > .component-column-toggle {
+		background: transparent;
+		block-size: 1lh;
+		border: 0;
+		inline-size: var(--column-toggle-width);
+		min-inline-size: var(--column-toggle-width);
+		padding: 0;
+
+		> button {
+			background: transparent;
+			border: 0;
+			color: #666;
+			cursor: pointer;
+			display: grid;
+			grid-template-columns: 18px 1fr;
+			inline-size: var(--column-toggle-width);
+			inset-block: 0;
+			inset-inline-end: 0;
+			padding: 0;
+			position: absolute;
+
+			&::before, &::after {
+				content: '';
+				grid-area: 1 / 1;
+			}
+
+			&:hover::before {
+				background: #eee;
+			}
+
+			&::after {
+				align-self: center;
+				background: currentColor;
+				block-size: 12px;
+				clip-path: polygon(0 0, 100% 50%, 0 100%);
+				inline-size: 8px;
+				justify-self: center;
+
+				@media (prefers-reduced-motion: no-preference) {
+					transition: rotate .1s;
+				}
+			}
+
+			&[aria-expanded=true]::after {
+				rotate: 180deg;
 			}
 		}
 	}
 
-	&:not(:hover, :focus-within, :where(.component-caption:has(> label:hover) + fieldset))
-	> table.component-table:not(:has(> tbody > tr > .row-selection > :checked)) {
-		> :is(thead, tbody) > tr > .row-insertion,
-		> tbody > tr > :first-child {
-			pointer-events: none;
-		}
+	> :is(thead, tbody) > tr > :is(.row-insertion, .row-selection) {
+		clip-path: inset(0);
+		translate: none;
 
-		> tbody > tr > :first-child {
-			clip-path: inset(0 100% 0 0);
-			translate: 100%;
-		}
+		@media (prefers-reduced-motion: no-preference) {
+			transition: clip-path .1s, display .1s allow-discrete, translate .1s;
 
-		> :is(thead, tbody) > tr > .row-insertion {
+			@starting-style {
+				clip-path: inset(0 0 0 100%);
+				translate: -100%;
+			}
+		}
+	}
+
+	> :is(thead, tbody) > tr > .row-selection {
+		border: 0;
+		padding: 0;
+		text-align: center;
+		vertical-align: middle;
+		width: var(--selection-width);
+
+		> input[type=checkbox] {
+			margin: 0 6px;
+			vertical-align: middle;
+
+			&:enabled {
+				cursor: pointer;
+			}
+		}
+	}
+
+	> thead > tr > .row-selection {
+		background: transparent;
+
+		&:has(> input:enabled) {
+			cursor: pointer;
+		}
+	}
+
+	> tbody > tr > .row-selection {
+		cursor: pointer;
+	}
+
+	> :is(thead, tbody) > tr > :first-child {
+		border-inline-start: 1px solid #ddd;
+	}
+
+	> :is(thead, tbody) > tr > .row-insertion {
+		border-inline-end: 1px solid #ddd;
+	}
+
+	> thead > tr > .row-insertion {
+		border-start-end-radius: 3px;
+	}
+
+	&:not(:has(> tbody > tr)) > thead > tr,
+	> tbody > tr:last-child {
+		> .row-insertion {
+			border-end-end-radius: 3px;
+		}
+	}
+
+	&:not(:has(> tbody > tr)) > thead > tr > th:not(.row-selection, .component-column-toggle) {
+		box-shadow: inset 0 -1px #ddd;
+	}
+
+	> tbody > tr:last-child > td:not(.row-selection) {
+		border-bottom: 1px solid #ddd;
+	}
+
+	&:has(> thead > tr > .component-column-toggle > [aria-expanded=false]) {
+		> :is(thead, tbody) > tr > :is(.row-selection, .row-insertion) {
 			clip-path: inset(0 0 0 100%);
+			display: none;
+			pointer-events: none;
 			translate: -100%;
 		}
 
-		> :is(thead, tbody) > tr > :nth-last-child(2) {
-			box-shadow: inset -1px 0 #ddd;
+		> .component-actions {
+			&:not(:has([data-remove-rows]:not([inert]))) {
+				display: none;
+			}
+
+			> tr > td:first-child {
+				// The footer spans the toggle column when the insertion column is hidden.
+				padding-inline-end: var(--column-toggle-width);
+			}
+
+			> tr > .row-selection {
+				display: none;
+			}
 		}
 
-		> thead > tr > :nth-last-child(2) {
+		> :is(thead, tbody) > tr > :has(+ .row-insertion) {
+			border-inline-end: 1px solid #ddd;
+		}
+
+		> thead > tr > :has(+ .row-insertion) {
 			border-start-end-radius: 4px;
 		}
 
-		&:not(:has(> tbody > tr)) > thead > tr > :nth-last-child(2),
-		> tbody > tr:last-child > :nth-last-child(2) {
+		&:not(:has(> tbody > tr)) > thead > tr > :has(+ .row-insertion),
+		> tbody > tr:last-child > :has(+ .row-insertion) {
 			border-end-end-radius: 4px;
 		}
 	}
 
 	> .component-actions {
-		align-content: end;
-		display: grid;
-		grid-template-rows: minmax(0, 0fr);
-		overflow: clip;
+		--action-height: 24px;
+		--action-offset: calc(-1 * var(--action-height));
+
 		visibility: hidden;
 
 		@media (prefers-reduced-motion: no-preference) {
-			transition: grid-template-rows .1s, visibility 0s .1s;
+			transition: visibility 0s .1s;
 		}
 
-		&:has(> div:hover, [data-remove-rows]:not([inert])) {
-			grid-template-rows: minmax(0, 1fr);
+		&:is(:hover, :has([data-remove-rows]:not([inert]))) {
+			--action-offset: 0px;
+
 			transition-delay: 0s;
 			visibility: visible;
+
+			> tr > td {
+				padding-block: 4px 2px;
+			}
 		}
 
-		> div {
-			align-items: center;
-			align-self: end;
-			block-size: max-content;
-			display: flex;
-			justify-self: start;
-			padding-block: 4px 2px;
+		> tr > td {
+			line-height: 0;
+			padding: 0;
+			text-align: end;
 
-			> [data-toggle-rows] {
+			&.row-selection {
+				text-align: center;
+			}
+
+			@media (prefers-reduced-motion: no-preference) {
+				transition: padding-block .1s;
+			}
+
+			> button {
 				align-items: center;
-				align-self: stretch;
 				background: transparent;
+				block-size: var(--action-height);
 				border: 0;
-				border-radius: 4px;
-				cursor: pointer;
-				display: flex;
-				inline-size: var(--selection-width, 26px);
-				padding: 0;
+				box-sizing: border-box;
+				// Clip the part that slides above the footer while the row contracts.
+				clip-path: inset(calc(-1 * var(--action-offset)) 0 0);
+				display: inline-flex;
+				margin-block-start: var(--action-offset);
+				padding-block: 0;
+				vertical-align: bottom;
+
+				@media (prefers-reduced-motion: no-preference) {
+					transition: background-color .1s, clip-path .1s, margin-block-start .1s;
+				}
 
 				&:hover {
 					background-color: #f4f4f4;
 				}
+
+				&:focus-visible {
+					outline-offset: -1px;
+				}
+			}
+
+			> [data-toggle-rows] {
+				border-radius: 4px;
+				cursor: pointer;
+				inline-size: var(--selection-width);
+				padding-inline: 0;
 
 				&::before {
 					background: #666;
@@ -109,12 +248,11 @@ fieldset.edit-components {
 					content: '';
 					inline-size: 100%;
 					mask: url('selection-arrow.svg') center / contain no-repeat;
+					scale: -1 1;
 				}
 			}
 
 			> [data-remove-rows] {
-				background-color: transparent;
-				border: 0;
 				padding-inline: 4px 8px;
 				text-decoration: underline dotted;
 
@@ -123,7 +261,6 @@ fieldset.edit-components {
 				}
 
 				&:hover {
-					background-color: #f4f4f4;
 					text-decoration-style: solid;
 				}
 			}
@@ -131,7 +268,13 @@ fieldset.edit-components {
 	}
 }
 
+table.component-table > thead > tr > .row-insertion {
+	min-inline-size: calc(18px + 2 * var(--row-insertion-padding));
+}
+
 table.component-table > :is(thead, tbody) > tr > .row-insertion {
+	--row-insertion-padding: 5px;
+
 	position: relative;
 	width: 1%;
 
@@ -153,110 +296,30 @@ table.component-table > :is(thead, tbody) > tr > .row-insertion {
 		color: inherit;
 		cursor: pointer;
 		display: flex;
+		font-size: 18px;
+		font-weight: 300;
 		inset: 0;
 		justify-content: center;
 		line-height: inherit;
-		padding: 0;
+		padding: 2px var(--row-insertion-padding);
 		position: absolute;
 
 		&:focus-visible {
 			outline-offset: -1px;
 		}
-
-		> span {
-			font-size: 18px;
-			font-weight: 300;
-			inline-size: 18px;
-			pointer-events: none;
-			text-align: center;
-		}
-	}
-
-	> [data-insert-row=first] {
-		margin-inline: auto;
-		position: static;
-
-		&::after {
-			content: '';
-			inset: 0;
-			position: absolute;
-		}
 	}
 }
 
-ul.object.properties > li:has(> fieldset.edit-components, > div > table.component-table[data-component-output]) {
-	--selection-width: 26px;
+ul.object.properties > li > label:has(span[role=button]) {
+	padding: 0;
 
-	> :is(label, .component-caption) {
-		min-inline-size: var(--selection-width);
-	}
+	> span[role=button] {
+		cursor: pointer;
+		display: inline-block;
+		padding: 10px 7px;
 
-	> .component-caption {
-		background: transparent;
-		border: 0;
-		display: table-cell;
-		padding: 7px 0;
-		text-align: right;
-		vertical-align: top;
-
-		> label {
-			display: inline-block;
-			font-weight: 500;
-			white-space: nowrap;
-		}
-
-		&:has(+ fieldset.edit-components [data-toggle-rows]:enabled) > label {
-			cursor: pointer;
-		}
-	}
-
-	> .component-caption + fieldset.edit-components > .component-actions {
-		margin-inline-start: calc(-1 * var(--selection-width));
-	}
-
-	> .component-caption + fieldset.edit-components > table.component-table {
-		border: 0;
-		margin-inline-start: calc(-1 * var(--selection-width));
-		width: calc(100% + var(--selection-width));
-
-		> :is(thead, tbody) > tr > :first-child {
-			background: transparent;
-			border: 0;
-			padding: 0;
-			width: var(--selection-width);
-		}
-
-		> :is(thead, tbody) > tr > :last-child {
-			border-inline-end: 1px solid #ddd;
-		}
-
-		> thead > tr {
-			> :not(:first-child) {
-				border-top: 1px solid #ddd;
-			}
-
-			> :nth-child(2) {
-				border-start-start-radius: 4px;
-			}
-
-			> :last-child {
-				border-start-end-radius: 4px;
-			}
-		}
-
-		&:not(:has(> tbody > tr)) > thead > tr,
-		> tbody > tr:last-child {
-			> :not(:first-child) {
-				border-bottom: 1px solid #ddd;
-			}
-
-			> :nth-child(2) {
-				border-end-start-radius: 4px;
-			}
-
-			> :last-child {
-				border-end-end-radius: 4px;
-			}
+		@media (max-width: 600px) {
+			padding: 4px 7px 0;
 		}
 	}
 }
@@ -270,22 +333,6 @@ table.component-table {
 	border-spacing: 0;
 	width: fit-content;
 
-	> tbody > tr > .row-insertion:not(:focus-within) > button > span {
-		visibility: hidden;
-	}
-
-	&:not(:has(> :is(thead, tbody) > tr > .row-insertion:focus-within)) {
-		> tbody > tr > .row-insertion:hover > button > span {
-			visibility: visible;
-		}
-	}
-
-	&:has(> tbody > tr > .row-insertion:is(:hover, :focus-within)) {
-		> thead > tr > .row-insertion:not(:focus-within) > button > span {
-			visibility: hidden;
-		}
-	}
-
 	> thead:has(> tr > .row-insertion:is(:hover, :has(> button:focus-visible))) + tbody > tr:first-child,
 	> tbody > tr:has(> .row-insertion:is(:hover, :has(> button:focus-visible))) + tr {
 		--row-separator: #666;
@@ -293,7 +340,7 @@ table.component-table {
 
 	&:not(:has(> tbody > tr)) > thead > tr:has(> .row-insertion:is(:hover, :has(> button:focus-visible))),
 	> tbody > tr:last-child:has(> .row-insertion:is(:hover, :has(> button:focus-visible))) {
-		> :not(:first-child) {
+		> :not(.row-selection) {
 			box-shadow: inset 0 -1px #666;
 		}
 	}
@@ -316,28 +363,6 @@ table.component-table {
 		&:last-child {
 			border-start-end-radius: 3px;
 		}
-
-		&.row-selection {
-			background: transparent;
-			position: relative;
-
-			> button {
-				background: transparent;
-				border: 0;
-				cursor: pointer;
-				inset: 0;
-				padding: 0;
-				position: absolute;
-
-				&:disabled {
-					cursor: default;
-				}
-
-				&:focus-visible {
-					outline-offset: -1px;
-				}
-			}
-		}
 	}
 
 	> :is(thead, tbody) > tr > :is(th, td) + :is(th, td) {
@@ -355,7 +380,7 @@ table.component-table {
 		}
 	}
 
-	> tbody > tr:has(> .row-selection > input:checked) > td {
+	> tbody > tr:has(> .row-selection > input:checked) > td:not(.row-insertion, .row-selection) {
 		background: #edf4ff;
 	}
 
@@ -394,12 +419,8 @@ table.component-table {
 		> input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=hidden]) {
 			box-sizing: border-box;
 			field-sizing: content;
-			max-width: 100%;
-			min-width: 1.5em;
-
-			@media (max-width: 37.5em) {
-				max-width: 16vw;
-			}
+			max-inline-size: 100cqi;
+			min-inline-size: 1.5em;
 		}
 
 		> select,
@@ -412,18 +433,6 @@ table.component-table {
 			@media (max-width: 37.5em) {
 				contain: inline-size;
 				min-width: min(12vw, 4.5em);
-			}
-		}
-
-		&.row-selection {
-			cursor: pointer;
-			text-align: center;
-			width: 1%;
-
-			> input[type=checkbox] {
-				cursor: inherit;
-				margin: 0 6px;
-				vertical-align: middle;
 			}
 		}
 	}

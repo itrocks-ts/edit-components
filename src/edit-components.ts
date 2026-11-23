@@ -98,6 +98,8 @@ export async function editComponents<T extends object>(
 		readOnly:    false,
 		removeRow:   escapeHtml(tr('Delete 1 row')),
 		removeRows:  escapeHtml(tr('Delete $1 rows', ['%count%'])),
+		removeSpan:  columns.length + 1,
+		rowActions:  escapeHtml(tr('Row actions')),
 		rowToken,
 		rows:        await Promise.all(rows.map((value, index) => row(value, index + 1))),
 		selectRow,

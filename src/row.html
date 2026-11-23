@@ -1,19 +1,17 @@
 <template><!--BEGIN-->
 <tr>
-	<!--selectRow?-->
-	<td class="row-selection">
-		<input type="checkbox" aria-label="{selectRow}">
-		<input type="hidden" name="{prefix}.id" value="{identifier}">
-	</td>
-	<!--end-->
 	<!--cells-->
 	<td data-if="{editable}" class="form-control" data-component-control data-end>{content}</td>
 	<!--end-->
 	<!--insertAfter?-->
 	<td class="row-insertion">
-		<button type="button" data-insert-row="after" aria-label="{insertAfter}" title="{insertAfter}">
-			<span aria-hidden="true">+</span>
-		</button>
+		<button type="button" data-insert-row="after" aria-label="{insertAfter}" title="{insertAfter}">+</button>
+	</td>
+	<!--end-->
+	<!--selectRow?-->
+	<td class="row-selection">
+		<input type="checkbox" aria-label="{selectRow}">
+		<input type="hidden" name="{prefix}.id" value="{identifier}">
 	</td>
 	<!--end-->
 </tr>

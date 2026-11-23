@@ -1,22 +1,25 @@
 <table class="component-table" data-if="{readOnly}" data-component-output data-end
-	data-if="{insertFirst}" tabindex="-1" data-end
+	data-if="{rowToken}" id="{id}" data-row-token="{rowToken}" tabindex="-1" data-end
+	data-if="{caption}" aria-labelledby="{id}-label" data-end
 >
 	<thead>
 		<tr>
-			<!--selectRow?-->
-			<th class="row-selection" scope="col" aria-label="{selectRow}">
-				<button type="button" data-toggle-rows aria-label="{selectRows}" title="{selectRows}"
-					aria-pressed="false" disabled></button>
-			</th>
-			<!--end-->
 			<!--columns-->
 			<th scope="col">{caption}</th>
 			<!--end-->
 			<!--insertFirst?-->
 			<th class="row-insertion" scope="col">
-				<button type="button" data-insert-row="first" aria-label="{insertFirst}" title="{insertFirst}">
-					<span aria-hidden="true">+</span>
-				</button>
+				<button type="button" data-insert-row="first" aria-label="{insertFirst}" title="{insertFirst}">+</button>
+			</th>
+			<!--end-->
+			<!--selectRow?-->
+			<th class="row-selection" scope="col" aria-label="{selectRow}">
+				<input type="checkbox" data-toggle-rows aria-label="{selectRows}" title="{selectRows}" disabled>
+			</th>
+			<!--end-->
+			<!--rowToken?-->
+			<th class="component-column-toggle" scope="col">
+				<button type="button" aria-expanded="false" aria-label="{rowActions}" title="{rowActions}"></button>
 			</th>
 			<!--end-->
 		</tr>
@@ -26,4 +29,17 @@
 		{./row.html}
 		<!--end-->
 	</tbody>
+	<!--rowToken?-->
+	<tfoot class="component-actions">
+		<tr>
+			<td colspan="{removeSpan}">
+				<button class="action" type="button" data-remove-rows="{removeRows}" inert>{removeRow}</button>
+			</td>
+			<td class="row-selection">
+				<button type="button" id="{id}-toggle-rows" data-toggle-rows aria-label="{selectRows}" title="{selectRows}"
+					aria-pressed="false" disabled></button>
+			</td>
+		</tr>
+	</tfoot>
+	<!--end-->
 </table>
